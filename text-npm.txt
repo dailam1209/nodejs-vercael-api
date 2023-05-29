@@ -1,0 +1,6 @@
+npm i @supercharge/strings babel  bcrypt bcryptjs body-parser cloudinary cookie-session cors crypto crypto-js dotenv ejs express jsonwebtoken mongoose mongoose-beautiful-unique-validation mongoose-unique-validator nodemailer nodemon passport passport-google-oauth20 validator --save
+
+git branch -M main
+git remote add origin https://github.com/dailam1209/BeShop.git
+git push -u origin main
+cos
