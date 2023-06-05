@@ -13,6 +13,9 @@
   },
   "author": "dailamBE",
   "license": "ISC",
+  "engines": {
+    "node": ">=14.20.1"
+  },
   "dependencies": {
     "@supercharge/strings": "^2.0.0",
     "babel": "^6.23.0",
