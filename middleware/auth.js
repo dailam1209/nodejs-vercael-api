@@ -1,18 +1,37 @@
-const ErrorHandler = require("../untils/ErrHandle");
+const ErrorHandlerUser = require("../untils/ErrorHandlerUser");
 const jwt = require("jsonwebtoken");
 const User = require("../models/UserModel");
+const catchAsyncErrors = require("./catchAsyncErrors");
 
 
-exports.isAuthenticatedUser = async (req,res,next) =>{
-    const { token } = req.cookies;
+exports.isAuthenticatedUser = catchAsyncErrors(async (req,res,next) =>{
+  let token;
+  if(req?.headers?.authorization?.startsWith("Bearer")) {
+    token = req.headers.authorization.split(" ")[1];
 
-  if (!token) {
-    return next(new ErrorHandler("Please Login for access this resource", 401));
+    try {
+      if(token) {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
+        const user = await User.findById(decoded?.id);
+        req.user = user;
+        next();
+      }
+    } catch (err) {
+      throw new Error("Not authorized token expired, Please login again");
+
+    }
+  } else {
+    throw new Error("There is no token attached to header");
   }
+});
 
-  const decodedData = jwt.verify(token, process.env.JWT_SECRET_KEY);
 
-  req.user = await User.findById(decodedData.id);
-
-  next();
-};
+// Admin Roles
+exports.authorizeRoles = (...roles) => {
+  return (req,res,next) =>{
+      if(!roles.includes(req.user.role)){
+        return next(new ErrorHandler(`${req.user.role} can not access this resources`));
+      };
+      next();
+  }
+}

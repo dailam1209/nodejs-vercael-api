@@ -12,7 +12,8 @@ const UserSchema = new mongoose.Schema({
         type: String,
         required: true,
         minlength: [3, "Please enter a username atleast 3 characters"],
-        maxlength: [15, "Username can not big than 15 characters"]
+        maxlength: [15, "Username can not big than 15 characters"],
+        unique: true
     },
     email: {
         type: String,
@@ -32,14 +33,23 @@ const UserSchema = new mongoose.Schema({
     },
     role: {
         type: String,
-        default: "user"
+        default: "user",
+        required: false,
     },
     createAt: {
         type: Date,
         default: Date.now()
     },
-    resetPasswordToken: String,
-    resetPasswordTime: Date
+    resetPasswordToken: {
+        type: String,
+        required: false,
+        default: ""
+    },
+    resetPasswordTime: {
+        type: Date,
+        required: false,
+        default: ""
+    }
 
     }
 );
@@ -47,14 +57,13 @@ const UserSchema = new mongoose.Schema({
 
 // compare password
 UserSchema.methods.comparePassword = async function (enterPassword) {
-    return await bcrypt.compare(enterPassword, this.password);
+    return await bcrypt.compare(enterPassword, this.password)
 }
 
 
 // forgot password
 UserSchema.methods.getResetToken = function () {
     const resetToken = crypto.randomBytes(20).toString("hex");
-
     this.resetPasswordToken = crypto.createHash("sha256")
                                     .update(resetToken)
                                     .digest("hex");
@@ -63,12 +72,9 @@ UserSchema.methods.getResetToken = function () {
     return resetToken;
 }
 
-
 /// jwt token
-UserSchema.methods.getJwtToken =  function () {
-    return jwt.sign({ id: this._id}, process.env.JWT_SECRET_KEY, {
-        expiresIn: process.env.JWT_EXPIRES,
-    });
+UserSchema.methods.getJwtToken =  function (id) {
+    return jwt.sign({ id }, process.env.JWT_SECRET_KEY, { expiresIn: "1d" });
 }
 
 module.exports = mongoose.model("User", UserSchema);

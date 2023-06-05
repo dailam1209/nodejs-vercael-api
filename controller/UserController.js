@@ -1,12 +1,15 @@
 const User = require("../models/UserModel");
 const bcrypt = require('bcrypt');
+const crypto = require("crypto");
 const cloudinary = require("cloudinary");
 const sendEmail = require("../untils/sendEmail");
 const sendToken = require("../untils/jwtToken");
-const { default: ErrHandle } = require("../untils/ErrHandle");
+const ErrHandle  = require("../untils/ErrHandle");
+const gennerCode = require("../untils/genercode");
+const validateMongoDbId = require("../untils/validateMongooseDbId");
 
 
-// register
+// register -> ok
 exports.register = async (req, res) => {
     try {
         const  { username, email, password, article_image} = req.body;
@@ -21,21 +24,19 @@ exports.register = async (req, res) => {
         // const myCloud = await cloudinary.v2.uploader.upload(avatar, {
         //     folder: "avatars",
         //   });
-        user = await User.create({
-            username,
-            email,
-            password: bcrypt.hashSync(password, 10),
+        else {
 
-            article_image
-            
-        });
-
-        // res.status(200).json({
-        //     success: true,
-        //     user
-        // })
-
-        sendToken( user, 200, res);
+            user = await User.create({
+                username,
+                email,
+                password: bcrypt.hashSync(password, 10),
+    
+                article_image
+                
+            });
+    
+            sendToken( user, 200, res);
+        }
 
 
     }
@@ -48,83 +49,84 @@ exports.register = async (req, res) => {
     }
 };
 
-
-
-
-// login
-exports.login = async (req, res) => {
+// login  -> ok
+exports.login = async (req, res, next) => {
     try {
         const { email, password } = req.body;
 
-        const user = await User.findOne({ email });
         if(!email || !password) {
-            res.status(400).json({
-                success: false,
-                message: 'Please enter the email and password'
-            });
-        }
-        if(!user) {
-            res.status(400).json({
-                success: false,
-                message: 'Request Fail'
-            });
+            return next(
+                ErrHandle("Please enter the email and password",400, res)
+                )
         }
 
+        else {
 
-        bcrypt.compare(password, user.password , function(err, result) {
-            if(err)  {
-                res.status(401).json({
-                    success: false,
-                    message: e.message
-                    
-                })
+            const user = await User.findOne({ email });
+            
+            if(!user) {
+                return next(
+                    ErrHandle("Email or Password no match",400, res)
+                    )
             }
-            // if(result) {
-            //     let jwtSecretKey = process.env.JWT_SECRET_KEY;
-            //     let data = {
-            //         time: Date(),
-            //         userId: 12,
-            //     }
-            //     const accessToken = jwt.sign(data, jwtSecretKey);
-            //     const { ...others} = user._doc;
-            //     res.status(200).json({...others, accessToken});
-            // } else {
-            //     return res.status(401).json({
-            //         success: false,
-            //         message: 'Please again the email and password'
-            //     });
-                
-            // }
-
-            sendToken( user, 200, res);
-        });
+    
+            const match = await bcrypt.compare(password, user.password);
+            if(match) {
+                sendToken( user, 200, res);
+            }
+            else {
+                return next(
+                    ErrHandle("Email or Password no match 1",401, res)
+                    )
+            }
+        }
 
     }
     catch (err) {
-        res.status(500).json({
-            success: false,
-            message: err.message,
-            
-        })
+        return next(
+            ErrHandle(err.message,500, res)
+            )
+        
     }
 }
 
 
-//logout 
+//logout  -> ok
+
+exports.logout = async (req, res, next) => {
+    res.cookie("token", null, {
+        expires: new Date(Date.now()),
+        httpOnly: true,
+    });
+
+    res.status(200).json({
+        success: true,
+        message: "LogOut Success!"
+    })
+}
 
 
+// forgot password -> ok
+exports.forgotpassword = async (req, res, next) => {
 
-// forgot password
-exports.forgotpassword = async (req, res) => {
+    const { email } = req.body;
 
-    const user = await User.findOne({ email: req.body.email });
+    const user = await User.findOne({ email });
     if(!user) {
-        res.status(401).json({
-            success: false,
-            message: 'No email matched'
-        })
+        console.log("email", email);
+        return next(
+            ErrHandle("Not found email matched",400, res)
+            )
     }
-   const resetToken = await user.getResetToken();
+//    const resetToken = user.getResetToken();
+   const resetToken = crypto.randomBytes(20).toString("hex");
+
+    user.resetPasswordToken = crypto.createHash("sha256")
+                                    .update(resetToken)
+                                    .digest("hex");
+
+    user.resetPasswordTime = Date.now() + 15 * 60 * 1000;
+    user.password = gennerCode(6);
 
    await user.save({
     validateBeforeSave: false
@@ -140,6 +142,8 @@ exports.forgotpassword = async (req, res) => {
     await sendEmail( {
         email: user.email,
         subject: `Password`,
+        password: user.password,
+        token: resetToken,
         message
     });
     res.status(200).json({
@@ -161,26 +165,22 @@ exports.forgotpassword = async (req, res) => {
    }
 };
 
-// Reset Password
-exports.resetPassword = async (req, res) => {
+// Reset Password -> ok
+exports.resetpassword = async (req, res) => {
 
+    const { token } = req.query;
+    console.log('token', token);
     const resetPasswordToken = crypto
         .createHash("sha256")
-        .update(req.param.token)
+        .update(token)
         .digest("hex");
 
+
+    console.log(resetPasswordToken);
     const user = User.findOne({
-        resetPasswordToken,
+        resetPasswordToken: resetPasswordToken,
         resetPasswordTime: { $gt: Date.now()}
     });
-
-    if(!user) {
-        res.status(400).json({
-            success: false,
-            message: 'Reset password false'
-        })
-    }
-
     if( req.body.password !== req.body.confirPassword) {
         res.status(400).json({
             success: false,
@@ -188,53 +188,98 @@ exports.resetPassword = async (req, res) => {
         })
     }
 
-    user.password = req.body.password;
-    user.resetPasswordToken = undefined;
-    user.resetPasswordTime = undefined;
+    if(!user) {
+        res.status(400).json({
+            success: false,
+            message: 'Reset password false'
+        })
+    } 
+    else {
 
-    await user.save();
+        // user.password = bcrypt.hashSync(req.body.password, 10);
+        // user.resetPasswordToken = undefined;
+        // user.resetPasswordTime = undefined;
+    
+        // await user.save({ validateBeforeSave: false });
+        await User.updateOne({ resetPasswordToken: resetPasswordToken },
+            { $set: { password: bcrypt.hashSync(req.body.password, 10), resetPasswordToken: ""}}
+        );
+        
+    
+        res.status(200).json({
+            success: true
+        })
+        // sendToken(user, 200, res);
+    }
 
-    sendToken(user, 200, res);
+
 }
 
-//  Get user Details
-exports.userDetails = async (req, res, next) => {
-    const user = await User.findById(req.user.id);
-  
+//  Get all user Details -> ok
+exports.getAllUser = async (req, res) => {
+    const users = await User.find();
+
     res.status(200).json({
-      success: true,
-      user,
-    });
+        success: true,
+        users,
+    }); 
+  
 };
 
-// Update user Password
+ //Get user Details -> ok
+exports.getUser = async (req, res) => {
+    const { id } = req.params;
+    try {
+        const user = await User.findById(id);
+        res.status(200).json({
+          success: true,
+          user,
+        });
+    }
+    catch (err) {
+        throw new Error(err);
+    } 
+  
+};
+
+
+
+
+
+// Update user Password ->ok
 
 exports.updatePassword = async (req, res, next) => {
-    const user = await User.findOne( req.user.id);
-    const isPasswordMatched = await user.comparePassword(req.body.oldPassword);
+    const user = await User.findOne({ _id: req.body.user_id });
+    const isPasswordMatched = await bcrypt.compare(req.body.oldPassword, user.password);
 
     if(!isPasswordMatched) {
         return next(
             ErrHandle("Old Password is incorrect", 400, res)
         )
     } 
-    if(req.body.newPassword !== req.body.confirPassword) {
+    if(req.body.oldPassword === req.body.newPassword) {
         return next(
-            ErrHandle("Password not matched with each other", 400, res)
+            ErrHandle("Password have been exist", 400, res)
         )
     }
 
-    user.password = req.body.newPassword;
+    await User.updateOne(
+            { email: user.email},
+            { $set: { password: bcrypt.hashSync(req.body.newPassword, 10)}}
+    );
 
-    await user.save();
-    sendToken(user, 200, res);
+    res.status(200).json(
+        {
+            success: true
+        }
+    )
 
 };
 
-// update profile
+// update profile -> ok
 exports.updateProfile = async (req, res, next) => {
     const newuserData = {
-        name: req.body.name,
+        username: req.body.username,
         email: req.body.email
     }
     if(req.body.article_image !== '') {
@@ -251,13 +296,14 @@ exports.updateProfile = async (req, res, next) => {
 
     res.status(200).json({
         success: true,
+        user
     })
 };
 
-// get all user -- admin
+// get all user -- admin -> ok
 
-exports.getAllUser = async (req, res, next) => {
-    const users = User.find();
+exports.getAllUser = async (req, res) => {
+    const users = await User.find();
 
     res.status(200).json({
         success: true,
@@ -266,7 +312,7 @@ exports.getAllUser = async (req, res, next) => {
 };
 
 
-//get single user --admin
+//get single user --admin -> ok
 exports.getSingleUser = async (req, res, next) => {
     const user= User.findById(req.param.id);
 
@@ -282,16 +328,15 @@ exports.getSingleUser = async (req, res, next) => {
     })
 };
 
-// delete user --admin
+// delete user --admin -> ok
 exports.deleteUser = async (req, res, next) => {
-    const user = User.findById(req.param.id);
-
+    const user = await User.findById(req.params.id);
     if(!user) {
         return next(
-            ErrHandle("User is not found with this id", 400, res)
+            ErrHandle(`User is not found with this ${req.params.id}`, 400, res)
         )
     }
-    await user.remove();
+    await user.deleteOne()
 
     res.status(200).json({
         success: true,
@@ -299,15 +344,15 @@ exports.deleteUser = async (req, res, next) => {
     })
 };
 
-//change user --admin
-exports.changeUser = async (req, res, next) => {
+//change user --admin  -> ok
+exports.changeUser = async (req, res) => {
     const newuserData = {
-        name: req.body.name,
+        username: req.body.username,
         email: req.body.email,
         role: req.body.role
     };
-
-    const user = User.findByIdAndUpdate( user.param.id, newuserData,
+    
+    const user = await User.findByIdAndUpdate( req.params.id, newuserData,
         {
             new: true,
             runValidators: true,
