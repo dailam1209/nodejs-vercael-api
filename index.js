@@ -51,7 +51,7 @@ mongoose.connect(process.env.MONGOOSE_URL,
 app.get('/', function(req, res) {
   res.render('pages/index');
 });
-
+app.get('/', (req, res) => res.send('Home Page Route'));
 app.use("/auth", user);
 app.use("/api/v2", product);
 app.use("/api/v2", cart)
