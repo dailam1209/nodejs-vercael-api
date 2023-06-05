@@ -53,6 +53,14 @@ mongoose.connect(process.env.MONGOOSE_URL,
         console.log(err);
     })
 
+app.use((req, res, next) => {
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.header(
+    "Access-Control-Allow-Headers",
+    "Origin, X-Requested-With, Content-Type, Accept"
+  );
+  next();
+});
 app.get('/', function(req, res) {
   res.render('pages/index');
 });
@@ -68,5 +76,3 @@ app.listen( process.env.PORT , () => {
     console.log(`Listenning to port ${process.env.PORT}`);
 })
 
-
-brand
