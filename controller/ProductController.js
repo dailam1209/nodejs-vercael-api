@@ -189,7 +189,7 @@ exports.deleteProduct = async (req, res, next) => {
 
 // get singleProduct
 exports.singleProduct = async (req, res, next) => {
-    let product = await Product.findById(req.params.id);
+    const product = await Product.findById(req.params.id);
     if(!product) {
         return next(ErrHandle('Not found product with id to show singleProduct', 400, res));
     }
