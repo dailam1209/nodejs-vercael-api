@@ -8,7 +8,7 @@ const passport = require('passport');
 const cookieSession = require("cookie-session");
 const cookieParser = require("cookie-parser");
 const passportSetup = require("./middlewares/passport");
-const configPaypal = require("./controller/PaypalController");
+const paypal = require('paypal-rest-sdk');
 
 // router
 const user = require("./router/UserRouter");
@@ -16,11 +16,15 @@ const product = require("./router/ProductRouter");
 const cart = require("./router/CartRouter");
 const category = require("./router/CategoryRouter");
 const brand = require("./router/BrandRouter");
-const paypal = require("./controller/PaypalController");
-
+const Paypal = require("./router/PaypalRouter");
 
 dotenv.config();
-app.configure(configPaypal.api);
+paypal.configure({
+  "host" : process.env.HOST_PAYPAL ,
+  "port" : "",
+  "client_id": process.env.CLIENT_ID,
+  "client_secret": process.env.SECRET_ID
+});
 // set the view engine to ejs
 app.set('view engine', 'ejs');
 
@@ -35,14 +39,14 @@ app.use(express.urlencoded({ limit: "50mb", extended: true }));
 //     credentials: true,
 //   }));
 
-  app.use((req, res, next) => {
-    res.setHeader("Access-Control-Allow-Origin", "*");
-    res.header(
-      "Access-Control-Allow-Headers",
-      "Origin, X-Requested-With, Content-Type, Accept"
-    );
-    next();
-  });
+app.use((req, res, next) => {
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.header(
+    "Access-Control-Allow-Headers",
+    "Origin, X-Requested-With, Content-Type, Accept"
+  );
+  next();
+});
 
 
 app.use(passport.initialize());
@@ -74,7 +78,7 @@ app.use("/api/v2/product", product);
 app.use("/api/v2/cart", cart);
 app.use("/api/v2/category", category)
 app.use("/api/v2/brand", brand);
-app.use('paypal', )
+app.use("/paypal", Paypal )
 
 app.listen( process.env.PORT , () => {
     console.log(`Listenning to port ${process.env.PORT}`);

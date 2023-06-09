@@ -2,9 +2,9 @@ const express = require("express");
 const router = express.Router();
 
 const { isAuthenticatedUser, authorizeRoles } = require("../middleware/auth");
-const getPaypalSuccess = require("../controller/PaypalController");
-const cancelPaypal = require("../controller/PaypalController");
-const toPaypal = require("../controller/PaypalController");
+const { getPaypalSuccess } = require("../controller/PaypalController");
+const {cancelPaypal} = require("../controller/PaypalController");
+const {toPaypal} = require("../controller/PaypalController");
 
 
 
