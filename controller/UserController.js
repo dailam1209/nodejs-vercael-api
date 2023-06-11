@@ -26,7 +26,7 @@ exports.register = async (req, res) => {
         //   });
         else {
 
-            user = await User.create({
+            let newUser = await User.create({
                 username,
                 email,
                 password: bcrypt.hashSync(password, 10),
@@ -35,7 +35,7 @@ exports.register = async (req, res) => {
                 
             });
     
-            sendToken( user, 200, res);
+            sendToken( newUser, 200, res);
         }
 
 
