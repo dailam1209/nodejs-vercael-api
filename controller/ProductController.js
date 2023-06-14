@@ -3,6 +3,7 @@ const ErrHandle = require("../untils/ErrHandle");
 const crypto = require('crypto');
 const {groupBy }= require("../untils/reduceProduct");
 const {printWithKey} = require("../untils/reduceProduct");
+const url = require('url');
 
 
 exports.createProduct = async (req, res, next) => {
@@ -38,22 +39,35 @@ exports.allProduct = async (req, res, next) => {
 };
 
 exports.searchTitle = async (req, res) => {
-
-    try {
-
-        const { title } = req.query;
-        console.log(title);
-        // title.toLowerCase();
-        let listTitle = [];
     
-        const product = await Product.find();
-        if(product) {
-            product.filter(_ => {
-                if(_.slug.indexOf(title) !== -1){
+    try {
+        const { title } = req.query;
 
-                    listTitle.push(_.slug);
-                }
-            })
+        let listTitle = [];
+        const url = req?.url?.slice(8,9);
+        
+        const product = await Product.find();
+        if(title && url === "t") {
+            console.log("title1", title);
+            if(product) {
+                product.filter(_ => {
+                    if(_.slug.indexOf(title) !== -1){
+    
+                        listTitle.push(_.slug);
+                    }
+                })
+            }
+        } 
+        if(url === "q") {
+            const { q } = req.query;
+            if(product) {
+                product.filter(_ => {
+                    if(_.slug.indexOf(q) !== -1){
+    
+                        listTitle.push(_);
+                    }
+                })
+            }
         }
 
         res.status(200).json({
@@ -66,6 +80,8 @@ exports.searchTitle = async (req, res) => {
 
 
 }
+
+
 
 //search all, detail "color, price, size", pagination
 exports.getAllProduct = async (req, res, next) => {
