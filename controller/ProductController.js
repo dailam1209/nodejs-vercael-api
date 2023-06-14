@@ -37,6 +37,36 @@ exports.allProduct = async (req, res, next) => {
         })
 };
 
+exports.searchTitle = async (req, res) => {
+
+    try {
+
+        const { title } = req.query;
+        console.log(title);
+        // title.toLowerCase();
+        let listTitle = [];
+    
+        const product = await Product.find();
+        if(product) {
+            product.filter(_ => {
+                if(_.slug.indexOf(title) !== -1){
+
+                    listTitle.push(_.slug);
+                }
+            })
+        }
+
+        res.status(200).json({
+            success: true,
+            listTitle,
+        })
+    } catch (err) {
+        throw Error(err);
+    }
+
+
+}
+
 //search all, detail "color, price, size", pagination
 exports.getAllProduct = async (req, res, next) => {
     const param = req.params.id; // title
