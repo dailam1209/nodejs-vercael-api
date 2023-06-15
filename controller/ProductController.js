@@ -183,18 +183,22 @@ exports.getAllProduct = async (req, res, next) => {
     else {
         filterPrice = filterSize;
     }
-    // group code
-    reductProduct = await groupBy(filterPrice, 'code', arrKey);
-    // arrKey code to map 
-    arrKey = arrKey.slice(skip, lengthSkip);
-    // arr format 'code'
-    reductProductLast = await printWithKey(arrKey, reductProduct).slice(skip, lengthSkip);
+
+    // if(filterPrice.length > 0) {
+
+    //     // group code
+    //     reductProduct = await groupBy(filterPrice, 'code', arrKey);
+        // arrKey code to map 
+        arrKey = arrKey.slice(skip, lengthSkip);
+    //     // arr format 'code'
+    //     reductProductLast = await printWithKey(arrKey, reductProduct).slice(skip, lengthSkip);
+    // }
 
 
     res.status(201).json({
-        reductProduct: reductProductLast,
+        reductProduct: filterPrice,
         length: Math.ceil(arrKey.length / resultPerPage),
-        arrKey: arrKey,
+        // arrKey: arrKey,
     })
 };
 
