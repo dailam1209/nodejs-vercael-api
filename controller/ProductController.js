@@ -85,11 +85,15 @@ exports.searchTitle = async (req, res) => {
 
 //search all, detail "color, price, size", pagination
 exports.getAllProduct = async (req, res, next) => {
-    const param = req.params.id; // title
+    // const param = req.query.mastercolor; // title
     const querycolor = req.query.mastercolor; // color
     const querysize = req.query.size; // size
     const queryprice = req.query.price; // price
     
+    // console.log("param", param);
+    console.log("querycolor", querycolor);
+    console.log("querysize", querysize);
+    console.log("queryprice", queryprice);
     // first handle
     let arrKey = [];
     let reductProduct = [];
@@ -104,29 +108,30 @@ exports.getAllProduct = async (req, res, next) => {
     let lengthSkip = skip + resultPerPage;
 
     const ProductCount = await Product.find();
-    const filter = await ProductCount.filter(user => user.desc == (`${param}`))
+    // const filter = await ProductCount.filter(user => user.desc == (`${param}`))
     //color
-    if(querycolor) {
-      if(typeof querycolor === 'object') {
-        await  querycolor.map((titleColor, index) => {
-            filter.filter(user => {
-             if( user.color.title == titleColor) {
-                 filterColor.push(user);
-             }
-            })
-         })
-      }
-      else {
-            filter.filter(user => {
-             if( user.color.title == querycolor) {
-                 filterColor.push(user);
-             }
-            })
-      }
-    }
-    else {
-        filterColor = filter;
-    }
+    // if(querycolor) {
+    //   if(typeof querycolor === 'object') {
+    //     await  querycolor.map((titleColor, index) => {
+    //         ProductCount.filter(product => {
+    //          if( product.color.title == titleColor) {
+    //              filterColor.push(product);
+    //          }
+    //         })
+    //      })
+    //   }
+    //   else {
+    //         ProductCount.filter(product => {
+    //          if( product.color.title == querycolor) {
+    //              filterColor.push(product);
+    //          }
+    //         })
+    //   }
+    // }
+    // else {
+    //     filterColor = ProductCount;
+    // }
+    filterColor = ProductCount;
     // size
     if(querysize) {
         if( typeof querysize === 'object') {
