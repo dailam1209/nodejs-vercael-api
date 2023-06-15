@@ -179,6 +179,7 @@ exports.getAllProduct = async (req, res, next) => {
                 filterPrice.push(price);
             }
         })
+        console.log("filterPrice", filterPrice);
     }
     else {
         filterPrice = filterSize;
@@ -192,19 +193,24 @@ exports.getAllProduct = async (req, res, next) => {
         arrKey = arrKey.slice(skip, lengthSkip);
     //     // arr format 'code'
         // reductProductLast = await printWithKey(arrKey, reductProduct).slice(skip, lengthSkip);
-        reductProductLast = await lastResult('code', filterSize);
+        if(filterPrice.length > 0) {
 
-        if(reductProduct.length > lengthSkip) {
-            reductProduct.slice(skip, lengthSkip)
+            reductProduct = await lastResult('code', filterSize);
+    
+            if(reductProduct.length > lengthSkip) {
+                reductProduct.slice(skip, lengthSkip)
+            } else {
+                reductProduct.slice(skip, reductProduct.length)
+            }
         } else {
-            reductProduct.slice(skip, reductProduct.length)
+            reductProduct = []
         }
 
     // }
 
 
     res.status(201).json({
-        reductProduct: reductProductLast,
+        reductProduct: reductProduct,
         length: Math.ceil(arrKey.length / resultPerPage),
         // arrKey: arrKey,
     })
