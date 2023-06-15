@@ -99,7 +99,7 @@ exports.getAllProduct = async (req, res, next) => {
     let filterPrice = [];
 
     //page
-    let resultPerPage = 2; 
+    let resultPerPage = 12; 
     let page = req.query.page || 1; 
     let skip = resultPerPage * (page - 1);
     let lengthSkip = skip + resultPerPage;
@@ -192,7 +192,13 @@ exports.getAllProduct = async (req, res, next) => {
         arrKey = arrKey.slice(skip, lengthSkip);
     //     // arr format 'code'
         // reductProductLast = await printWithKey(arrKey, reductProduct).slice(skip, lengthSkip);
-        reductProductLast = await lastResult('code', filterSize).slice(skip, lengthSkip);
+        reductProductLast = await lastResult('code', filterSize);
+
+        if(reductProduct.length > lengthSkip) {
+            reductProduct.slice(skip, lengthSkip)
+        } else {
+            reductProduct.slice(skip, reductProduct.length)
+        }
 
     // }
 
