@@ -85,15 +85,12 @@ exports.searchTitle = async (req, res) => {
 
 //search all, detail "color, price, size", pagination
 exports.getAllProduct = async (req, res, next) => {
-    // const param = req.query.mastercolor; // title
     const querycolor = req.query.mastercolor; // color
     const querysize = req.query.size; // size
     const queryprice = req.query.price; // price
+    const url = req.url?.replace("/", '')?.split('?')[0];
     
-    // console.log("param", param);
-    console.log("querycolor", querycolor);
-    console.log("querysize", querysize);
-    console.log("queryprice", queryprice);
+    console.log("querycolor", req.url?.replace("/", '')?.split('?')[0]);
     // first handle
     let arrKey = [];
     let reductProduct = [];
@@ -108,6 +105,17 @@ exports.getAllProduct = async (req, res, next) => {
     let lengthSkip = skip + resultPerPage;
 
     const ProductCount = await Product.find();
+
+    await ProductCount.filter( sizecurrent => {
+     if( sizecurrent.slug.indexOf(url) !== -1) {
+        filterColor.push(sizecurrent);
+     }
+    })
+
+    console.log(filterColor);
+
+
+
     // const filter = await ProductCount.filter(user => user.desc == (`${param}`))
     //color
     // if(querycolor) {
@@ -131,7 +139,7 @@ exports.getAllProduct = async (req, res, next) => {
     // else {
     //     filterColor = ProductCount;
     // }
-    filterColor = ProductCount;
+    // filterColor = ProductCount;
     // size
     if(querysize) {
         if( typeof querysize === 'object') {
