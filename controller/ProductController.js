@@ -1,7 +1,7 @@
 const Product = require("../models/Product");
 const ErrHandle = require("../untils/ErrHandle");
 const crypto = require('crypto');
-const {groupBy }= require("../untils/reduceProduct");
+const {groupBy, lastResult }= require("../untils/reduceProduct");
 const {printWithKey} = require("../untils/reduceProduct");
 const url = require('url');
 
@@ -191,12 +191,14 @@ exports.getAllProduct = async (req, res, next) => {
         // arrKey code to map 
         arrKey = arrKey.slice(skip, lengthSkip);
     //     // arr format 'code'
-    //     reductProductLast = await printWithKey(arrKey, reductProduct).slice(skip, lengthSkip);
+        // reductProductLast = await printWithKey(arrKey, reductProduct).slice(skip, lengthSkip);
+        reductProductLast = await lastResult('code', filterSize).slice(skip, lengthSkip);
+
     // }
 
 
     res.status(201).json({
-        reductProduct: filterPrice,
+        reductProduct: reductProductLast,
         length: Math.ceil(arrKey.length / resultPerPage),
         // arrKey: arrKey,
     })

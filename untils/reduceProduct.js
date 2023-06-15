@@ -1,7 +1,6 @@
+let arrKey = [];
 
-
-
-exports.groupBy = (objectArray, property, arrKey) => {
+function groupBy(objectArray, property) {
     return objectArray.reduce(function (accumulator, obj) {
       let key = obj[property];
       if(arrKey.length <= 0) {
@@ -19,19 +18,21 @@ exports.groupBy = (objectArray, property, arrKey) => {
       accumulator[key].push(obj)
       return accumulator
     }, {})
-    
   }
 
-  let  newArrProduct = [];
 
-  exports.printWithKey = (a, arr) => {
-  for (let i in a) {
-      let code = a[i];
-      newArrProduct = [...newArrProduct,  arr[code]]
-  }
-  return newArrProduct;
+function printWithKey (a, b, c ) {
+    for (let i in a) {
+        let code = a[i];
+        c = [...c, b[code]]
+    }
+    return c;
 }
 
 
 
-
+exports.lastResult = (flow, listProduct) => {
+    let newArrProduct = []
+    let groupedStudents = groupBy(listProduct, 'code')
+    return printWithKey(arrKey, groupedStudents, newArrProduct)
+}
