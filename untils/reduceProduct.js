@@ -24,7 +24,9 @@ function groupBy(objectArray, property) {
 function printWithKey (a, b, c ) {
     for (let i in a) {
         let code = a[i];
-        c = [...c, b[code]]
+        if(b[code] !== undefined && b[code] !== null) {
+          c = [...c, b[code]]
+        }
     }
     return c;
 }
