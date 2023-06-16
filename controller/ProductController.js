@@ -90,7 +90,7 @@ exports.getAllProduct = async (req, res, next) => {
     const queryprice = req.query.price; // price
     const url = req.url?.replace("/", '')?.split('?')[0];
     
-    console.log("querycolor", req.url?.replace("/", '')?.split('?')[0]);
+    // console.log("querycolor", req.url?.replace("/", '')?.split('?')[0]);
     // first handle
     let arrKey = [];
     let reductProduct = [];
@@ -112,7 +112,7 @@ exports.getAllProduct = async (req, res, next) => {
      }
     })
 
-    console.log(filterColor);
+    // console.log(filterColor);
 
 
 
@@ -167,19 +167,17 @@ exports.getAllProduct = async (req, res, next) => {
      else {
         filterSize = filterColor ;
      }
+
+    //  console.log("filterSize", filterSize);
      
      
      //price
-     if(queryprice) {
+    if(queryprice) {
         const sliptPrice = queryprice.split('-');
         let number1 = Number(sliptPrice[0]);
         let number2 = Number(sliptPrice[1]);
-         filterSize.filter(price => {
-            if(price.price >=  number1 && price.price <=  number2) {
-                filterPrice.push(price);
-            }
-        })
-        console.log("filterPrice", filterPrice);
+        
+        await filterSize.filter(product => number1 <= product.price <= number2)
     }
     else {
         filterPrice = filterSize;
