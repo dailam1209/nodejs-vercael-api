@@ -32,21 +32,21 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(bodyParser.urlencoded({extended:true,limit:"50mb"}));
 app.use(express.urlencoded({ limit: "50mb", extended: true }));
-// app.use(cors({
-//     origin: "http://localhost:3001/",
-//     origin: "*",
-//     methods: "GET,POST,PUT,DELETE",
-//     credentials: true,
-//   }));
+app.use(cors({
+    origin: "http://localhost:3001/",
+    origin: "*",
+    methods: "GET,POST,PUT,DELETE",
+    credentials: true,
+  }));
 
-app.use((req, res, next) => {
-  res.setHeader("Access-Control-Allow-Origin", "*");
-  res.header(
-    "Access-Control-Allow-Headers",
-    "Origin, X-Requested-With, Content-Type, Accept, Authorization"
-  );
-  next();
-});
+// app.use((req, res, next) => {
+//   res.setHeader("Access-Control-Allow-Origin", "*");
+//   res.header(
+//     "Access-Control-Allow-Headers",
+//     "Origin, X-Requested-With, Content-Type, Accept, Authorization"
+//   );
+//   next();
+// });
 
 
 app.use(passport.initialize());
