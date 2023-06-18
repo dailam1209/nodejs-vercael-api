@@ -32,12 +32,13 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(bodyParser.urlencoded({extended:true,limit:"50mb"}));
 app.use(express.urlencoded({ limit: "50mb", extended: true }));
-app.use(cors({
-  origin: 'http://localhost:3000', // use your actual domain name (or localhost), using * is not recommended
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'HEAD', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Origin', 'X-Requested-With', 'Accept', 'x-client-key', 'x-client-token', 'x-client-secret', 'Authorization'],
-  credentials: true
-  }));
+// app.use(cors({
+//   origin: 'http://localhost:3000', 
+//   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'HEAD', 'OPTIONS'],
+//   allowedHeaders: ['Content-Type', 'Origin', 'X-Requested-With',
+//   'Accept', 'x-client-key', 'x-client-token', 'x-client-secret', 'Authorization'],
+//   credentials: true
+//   }));
 
 // app.use((req, res, next) => {
 //   // 👇️ specify CORS headers to send 👇️
@@ -52,6 +53,24 @@ app.use(cors({
 //   );
 //   next();
 // });
+
+const whitelist = ['http://localhost:3000', 'https://vercel-nodejs.onrender.com'];
+
+// ✅ Enable pre-flight requests
+app.options('*', cors());
+
+const corsOptions = {
+  credentials: true,
+  origin: (origin, callback) => {
+    if (whitelist.indexOf(origin) !== -1 || !origin) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+};
+
+app.use(cors(corsOptions));
 
 
 app.use(passport.initialize());
