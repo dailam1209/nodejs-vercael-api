@@ -1,76 +1,71 @@
 const WishList = require("../models/WishListModel");
-const ErrHandle = require("../untils/ErrHandle");
+const Product = require("../models/Product");
+const { lastResult } = require("../untils/reduceProduct");
 
 //wishList
-exports.addWishList = async (req, res, next) => {
-    const {
-        productName,
-        productPrice,
-        productImage,
-        quantity,
-        userId,
-        productId,
-        stock
-    } = req.body;
+exports.changeWishList = async (req, res, next) => {
 
-    const newIterm = await WishList.create({
-        productName,
-        productPrice,
-        productImage,
-        quantity,
-        userId,
-        productId,
-        stock
-    })
+    try {
+        const { userId, code } = req.body;
 
-    res.status(201).json({
-        success: true,
-        newIterm
-    })
+        const iterm = await WishList.findOne({ userId : userId, code: code});
+        if(iterm) {
+            await WishList.deleteOne({userId: userId, code: code})
+            res.status(200).json({
+                success: true,
+                message: "Deleted WishList"
+            })
+        } 
+        else {
+            await WishList.create({
+               userId,
+               code
+           })
+           res.status(200).json({
+               success: true,
+               message: "added WishList"
+           })
+        }
+    } catch (err) {
+        throw Error(err);
+    }
+   
+
 };
 
-// update WishList quantity
-exports.updateWishList = async (req, res, next) => {
-    const { quantity } = req.body;
-    const Wish = await WishList.findByIdAndUpdate(req.params.id);
+exports.getAllWishList = async (req, res, next) => {
 
-    if(!Wish) {
-        return next(
-            ErrHandle("No cart found with this id", 404, res)
-        )
+    try {
+        const { userId } = req.body;
+
+        const iterms = await WishList.find({ userId : userId});
+        let listWish = [] ;
+        if(!iterms) {
+            res.status(200).json({
+                success: flase,
+                message: `Dont have WishList of user for ${userId}`
+            })
+        }
+        else {
+            const allProduct = await Product.find();
+            iterms.filter((code, i) => {
+                allProduct.filter((wishlist, index) => {
+                    if(code.code === wishlist.code) {
+                        listWish.push(allProduct[index]);
+                    }
+                })
+            })
+           const flowCode = await  lastResult('code', listWish )
+           res.status(200).json({
+               success: true,
+               flowCode
+           })
+        }
+    } catch (err) {
+        throw Error(err);
     }
+   
 
-    await Wish.update({
-        quantity
-    })
-}
+};
 
-//get WishData
-exports.getWishListData = async (req, res, next) => {
-    const WishData = await WishList.findById({ userId: req.user.id});
-    if(!WishData) {
-        return next(
-            ErrHandle("No find WishData with userId", 404, res)
-        )
-    }
 
-    res.status(201).json({
-        success: true,
-        WishData
-    })
-
-}
-
-// remove WishData
-exports.removeWishData = async (req, res, next) => {
-    const WishData = await WishList.findById(req.params.id);
-
-    if(!WishData) {
-        return next( ErrHandle("No find WishData with params id", 404, res ));
-    }
-
-    res.status(201).json({
-        success: true,
-        WishData
-    })
-}

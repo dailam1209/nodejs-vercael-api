@@ -1,16 +1,13 @@
 const express = require("express");
+const router = express.Router();
 const {
-    addWishList,
-    updateWishList,
-    getWishListData,
-    removeWishData
+    changeWishList,
+    getAllWishList
 } = require("../controller/WishListController");
-const { isAuthenticatedUser, authorizeRoles } = require("../middleware/auth");
+const { isAuthenticatedUser } = require("../middleware/auth");
 
 
-router.route("/add-wishlist").post(isAuthenticatedUser,addWishList);
-router.route("/wishList").get(isAuthenticatedUser,getWishListData);
-router.route("wishList/update/:id").put(isAuthenticatedUser,updateWishList);
-router.route("/removeWishData/:id").delete(isAuthenticatedUser,removeWishData);
+router.route("/change-wishlist").post(isAuthenticatedUser,changeWishList);
+router.route("/get-wishlist").get(isAuthenticatedUser,getAllWishList);
 
 module.exports = router;
