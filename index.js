@@ -32,6 +32,7 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(bodyParser.urlencoded({extended:true,limit:"50mb"}));
 app.use(express.urlencoded({ limit: "50mb", extended: true }));
+app.use(cors());
 // app.use(cors({
 //   origin: 'http://localhost:3000', 
 //   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'HEAD', 'OPTIONS'],
