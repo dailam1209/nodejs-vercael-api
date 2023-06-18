@@ -1,59 +1,88 @@
 const Cart = require("../models/Cart");
-const WishList = require("../models/WishListModel");
+const Product = require("../models/Product")
+
 const ErrHandle = require("../untils/ErrHandle");
 
 exports.addCart = async (req, res, next) => {
+
     const {
         productName,
-        productPrice,
         productImage,
         quantity,
         userId,
         productId,
-        stock
+        statusCode,
+        inforproduct
     } = req.body;
 
-    const newIterm = await Cart.create({
+    await Cart.create({
         productName,
-        productPrice,
         productImage,
         quantity,
         userId,
         productId,
-        stock
+        statusCode,
+        inforproduct
     })
 
     res.status(201).json({
         success: true,
-        newIterm
     })
 };
 
 // update Cart quantity
 exports.updateCart = async (req, res, next) => {
-    const { quantity } = req.body;
-    const cart = await Cart.findByIdAndUpdate(req.params.id);
+    try {
 
-    if(!cart) {
-        return next(
-            ErrHandle("No cart found with this id", 404, res)
-        )
+        const { userId, quantity, productId } = req.body;
+        const cart = await Cart.find({ userId: userId, productId: productId});
+        
+        if(!cart) {
+            return next(
+                ErrHandle("No cart found with this id to update", 404, res)
+            )
+        }
+        await Cart.updateOne({ userId: userId, productId: productId}, 
+            {
+                $set: {
+                    quantity: quantity
+                }
+            })
+
+            res.status(200).json({
+                success: true,
+                message: "update"
+            })
+    } catch (err) {
+        res.status(401).json({
+            success: false,
+            message: err.message
+        })
     }
-
-    await cart.update({
-        quantity
-    })
 }
 
-//get cartData
+//get cartData => ok
 exports.getCartData = async (req, res, next) => {
-    const cartData = await Cart.findById({ userId: req.user.id});
+    
+    const  userId  = req.params.id;
+    const cartData = await Cart.find({userId : userId });
     if(!cartData) {
         return next(
             ErrHandle("No find cartData with userId", 404, res)
         )
     }
-
+    if(cartData) {
+        const allProduct = await Product.find();
+        await cartData.filter((cart, ind) => {
+            let productId = cart.productId;
+             allProduct.filter( (product, index) => {
+                 if(product._id.toString() === productId.toString()) {
+                    console.log("a",allProduct[index])
+                    cartData[ind].inforproduct = allProduct[index] ;
+                }
+            })
+        })
+    }
     res.status(201).json({
         success: true,
         cartData
@@ -61,91 +90,25 @@ exports.getCartData = async (req, res, next) => {
 
 }
 
-// remove cartData
+// remove cartData ==> ok
 exports.removeCartData = async (req, res, next) => {
-    const cartData = await Cart.findById(req.params.id);
+    try {
+        const { productId, userId } = req.body;
+        const cartData = await Cart.findOne({userId: userId, productId: productId});
 
-    if(!cartData) {
-        return next( ErrHandle("No find cartData with params id", 404, res ));
+        if(!cartData) {
+            return next( ErrHandle("No find cartData with params id", 404, res ));
+        }
+        await Cart.deleteOne({userId: userId, productId: productId})
+        res.status(201).json({
+            success: true,
+            message: "Deleted!"
+        })
+        
+        
+    } catch (err) {
+        throw Error(err);
     }
-
-    res.status(201).json({
-        success: true,
-        cartData
-    })
-}
+} 
 
 
-//wishList
-exports.addWishList = async (req, res, next) => {
-    const {
-        productName,
-        productPrice,
-        productImage,
-        quantity,
-        userId,
-        productId,
-        stock
-    } = req.body;
-
-    const newIterm = await WishList.create({
-        productName,
-        productPrice,
-        productImage,
-        quantity,
-        userId,
-        productId,
-        stock
-    })
-
-    res.status(201).json({
-        success: true,
-        newIterm
-    })
-};
-
-// update WishList quantity
-exports.updateWishList = async (req, res, next) => {
-    const { quantity } = req.body;
-    const Wish = await WishList.findByIdAndUpdate(req.params.id);
-
-    if(!Wish) {
-        return next(
-            ErrHandle("No cart found with this id", 404, res)
-        )
-    }
-
-    await Wish.update({
-        quantity
-    })
-}
-
-//get WishData
-exports.getWishListData = async (req, res, next) => {
-    const WishData = await WishList.findById({ userId: req.user.id});
-    if(!WishData) {
-        return next(
-            ErrHandle("No find WishData with userId", 404, res)
-        )
-    }
-
-    res.status(201).json({
-        success: true,
-        WishData
-    })
-
-}
-
-// remove WishData
-exports.removeWishData = async (req, res, next) => {
-    const WishData = await WishList.findById(req.params.id);
-
-    if(!WishData) {
-        return next( ErrHandle("No find WishData with params id", 404, res ));
-    }
-
-    res.status(201).json({
-        success: true,
-        WishData
-    })
-}

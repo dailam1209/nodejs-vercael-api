@@ -30,7 +30,10 @@ exports.isAuthenticatedUser = catchAsyncErrors(async (req,res,next) =>{
 exports.authorizeRoles = (...roles) => {
   return (req,res,next) =>{
       if(!roles.includes(req.user.role)){
-        return next(new ErrorHandler(`${req.user.role} can not access this resources`));
+        res.status(500).json({
+          success: false,
+          message: `${req.user.role} can not access this resources`
+        })
       };
       next();
   }

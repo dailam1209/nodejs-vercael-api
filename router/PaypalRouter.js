@@ -9,7 +9,7 @@ const {toPaypal} = require("../controller/PaypalController");
 
 
   
-router.route("/to-paypal").post(toPaypal);
+router.route("/to-paypal").post(isAuthenticatedUser, toPaypal);
 router.route("/cancel").get(isAuthenticatedUser, cancelPaypal);
 router.route("/success").get(isAuthenticatedUser, getPaypalSuccess);
 
