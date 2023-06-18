@@ -46,24 +46,16 @@ app.use((req, res, next) => {
   res.setHeader("Access-Control-Allow-Origin", process.env.REACT_URL);
   res.setHeader(
     'Access-Control-Allow-Methods',
-    'POST, PUT, PATCH, GET, DELETE'
+    'POST, PUT, PATCH, GET, DELETE, OPTIONS'
   );
   res.setHeader(
     'Access-Control-Allow-Headers',
-    'Origin, X-Api-Key, X-Requested-With, Content-Type, Accept, Authorization',
+    'X-Requested-With, Content-Type',
   );
   res.setHeader('Access-Control-Allow-Credentials', true);
   next();
 });
 
-const whitelist = ['http://localhost:3001', 'https://vercel-nodejs.onrender.com'];
-
-// ✅ Enable pre-flight requests
-// app.use(function (req, res, next) {
-//   res.header("Access-Control-Allow-Origin", "http://localhost:3001");
-//   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-//   next();
-// });
 
 
 app.use(passport.initialize());
