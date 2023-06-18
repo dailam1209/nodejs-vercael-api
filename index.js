@@ -33,28 +33,28 @@ app.use(cookieParser());
 app.use(bodyParser.urlencoded({extended:true,limit:"50mb"}));
 app.use(express.urlencoded({ limit: "50mb", extended: true }));
 app.use(cors());
-app.use(cors({
-  origin: '*',
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'HEAD', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Origin', 'X-Requested-With',
-  'Accept', 'x-client-key', 'x-client-token', 'x-client-secret', 'Authorization'],
-  credentials: true
-  }));
+// app.use(cors({
+//   origin: '*',
+//   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'HEAD', 'OPTIONS'],
+//   allowedHeaders: ['Content-Type', 'Origin', 'X-Requested-With',
+//   'Accept', 'x-client-key', 'x-client-token', 'x-client-secret', 'Authorization'],
+//   credentials: true
+//   }));
 
-// app.use((req, res, next) => {
-//   // 👇️ specify CORS headers to send 👇️
-//   res.setHeader("Access-Control-Allow-Origin", process.env.REACT_URL);
-//   res.setHeader(
-//     'Access-Control-Allow-Methods',
-//     'POST, PUT, PATCH, GET, DELETE, OPTIONS'
-//   );
-//   res.setHeader(
-//     'Access-Control-Allow-Headers',
-//     'X-Requested-With, Content-Type',
-//   );
-//   res.setHeader('Access-Control-Allow-Credentials', true);
-//   next();
-// });
+app.use((req, res, next) => {
+  // 👇️ specify CORS headers to send 👇️
+  res.setHeader("Access-Control-Allow-Origin", process.env.REACT_URL);
+  res.setHeader(
+    'Access-Control-Allow-Methods',
+    'POST, PUT, PATCH, GET, DELETE, OPTIONS'
+  );
+  res.setHeader(
+    'Access-Control-Allow-Headers',
+    'X-Requested-With, Content-Type',
+  );
+  res.setHeader('Access-Control-Allow-Credentials', true);
+  next();
+});
 
 
 
