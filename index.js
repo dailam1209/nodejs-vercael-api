@@ -54,7 +54,7 @@ app.use(express.urlencoded({ limit: "50mb", extended: true }));
 //   next();
 // });
 
-const whitelist = ['http://localhost:3000', 'https://vercel-nodejs.onrender.com'];
+const whitelist = ['http://localhost:3001', 'https://vercel-nodejs.onrender.com'];
 
 // ✅ Enable pre-flight requests
 app.options('*', cors());
