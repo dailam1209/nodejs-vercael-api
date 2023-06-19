@@ -39,7 +39,7 @@ exports.getAllWishList = async (req, res, next) => {
         const userId  = req.params.id;
 
         const iterms = await WishList.find({ userId : userId});
-        let listWish = [] ;
+        const listWish = [] ;
         if(!iterms) {
             res.status(401).json({
                 success: flase,
@@ -55,10 +55,10 @@ exports.getAllWishList = async (req, res, next) => {
                     }
                 })
             })
-        //    const flowCode = await  lastResult('code', listWish )
+           const flowCode = await  lastResult('code', listWish )
            res.status(200).json({
                success: true,
-               flowCode: listWish
+               flowCode: flowCode
            })
         }
     } catch (err) {
