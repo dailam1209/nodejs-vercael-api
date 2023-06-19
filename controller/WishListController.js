@@ -41,24 +41,24 @@ exports.getAllWishList = async (req, res, next) => {
         const iterms = await WishList.find({ userId : userId});
         let listWish = [] ;
         if(!iterms) {
-            res.status(200).json({
+            res.status(401).json({
                 success: flase,
                 message: `Dont have WishList of user for ${userId}`
             })
         }
         else {
             const allProduct = await Product.find();
-            iterms.filter((code, i) => {
+            await iterms.filter((code, i) => {
                 allProduct.filter((wishlist, index) => {
                     if(code.code === wishlist.code) {
                         listWish.push(allProduct[index]);
                     }
                 })
             })
-           const flowCode = await  lastResult('code', listWish )
+        //    const flowCode = await  lastResult('code', listWish )
            res.status(200).json({
                success: true,
-               flowCode
+               flowCode: listWish
            })
         }
     } catch (err) {

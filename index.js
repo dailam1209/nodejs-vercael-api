@@ -86,9 +86,9 @@ app.use("/api/v2/auth", user);
 app.use("/api/v2/product", product);
 app.use("/api/v2/cart", cart);
 app.use("/api/v2/wishlist", wishList);
-app.use("/api/v2/category", category)
+app.use("/api/v2/category", category);
 app.use("/api/v2/brand", brand);
-app.use("/paypal", Paypal )
+app.use("/paypal", Paypal );
 
 app.listen( process.env.PORT , () => {
     console.log(`Listenning to port ${process.env.PORT}`);
