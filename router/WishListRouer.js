@@ -8,6 +8,6 @@ const { isAuthenticatedUser } = require("../middleware/auth");
 
 
 router.route("/change-wishlist").post(isAuthenticatedUser,changeWishList);
-router.route("/:id").get(isAuthenticatedUser,getAllWishList);
+router.route("/get-list/:id").get(isAuthenticatedUser,getAllWishList);
 
 module.exports = router;
