@@ -12,7 +12,8 @@ exports.addCart = async (req, res, next) => {
         userId,
         productId,
         statusCode,
-        inforproduct
+        inforproduct,
+        size
     } = req.body;
 
     await Cart.create({
@@ -22,7 +23,8 @@ exports.addCart = async (req, res, next) => {
         userId,
         productId,
         statusCode,
-        inforproduct
+        inforproduct,
+        size
     })
 
     res.status(201).json({
@@ -34,15 +36,15 @@ exports.addCart = async (req, res, next) => {
 exports.updateCart = async (req, res, next) => {
     try {
 
-        const { userId, quantity, productId } = req.body;
-        const cart = await Cart.find({ userId: userId, productId: productId});
+        const { userId, quantity, productId, size } = req.body;
+        const cart = await Cart.find({ userId: userId, productId: productId, size: size});
         
         if(!cart) {
             return next(
                 ErrHandle("No cart found with this id to update", 404, res)
             )
         }
-        await Cart.updateOne({ userId: userId, productId: productId}, 
+        await Cart.updateOne({ userId: userId, productId: productId, size: size}, 
             {
                 $set: {
                     quantity: quantity
@@ -93,13 +95,13 @@ exports.getCartData = async (req, res, next) => {
 // remove cartData ==> ok
 exports.removeCartData = async (req, res, next) => {
     try {
-        const { productId, userId } = req.body;
-        const cartData = await Cart.findOne({userId: userId, productId: productId});
+        const { productId, userId, size } = req.body;
+        const cartData = await Cart.findOne({userId: userId, productId: productId,  size: size});
 
         if(!cartData) {
             return next( ErrHandle("No find cartData with params id", 404, res ));
         }
-        await Cart.deleteOne({userId: userId, productId: productId})
+        await Cart.deleteOne({userId: userId, productId: productId, size: size})
         res.status(201).json({
             success: true,
             message: "Deleted!"
