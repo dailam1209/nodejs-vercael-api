@@ -12,7 +12,7 @@ const router = express.Router();
 router.route("/add-cart").post(isAuthenticatedUser,addCart);
 router.route("/:id").get(isAuthenticatedUser,getCartData);
 router.route("/update-cart").post(isAuthenticatedUser,updateCart);
-router.route("/remove-cart").put(isAuthenticatedUser,removeCartData);
+router.route("/remove-cart").post(isAuthenticatedUser,removeCartData);
 
 
 module.exports = router;
