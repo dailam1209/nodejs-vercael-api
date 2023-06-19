@@ -36,7 +36,7 @@ exports.changeWishList = async (req, res, next) => {
 exports.getAllWishList = async (req, res, next) => {
 
     try {
-        const { userId } = req.body;
+        const userId  = req.params.id;
 
         const iterms = await WishList.find({ userId : userId});
         let listWish = [] ;
