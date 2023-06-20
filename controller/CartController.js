@@ -95,14 +95,13 @@ exports.getCartData = async (req, res, next) => {
 // remove cartData ==> ok
 exports.removeCartData = async (req, res, next) => {
     try {
-        const id = req.params.id;
-        const {userId} = req.body;
-        const cartData = await Cart.find({userId: userId, _id: id});
+        const {userId, productId, size} = req.body;
+        const cartData = await Cart.findOne({userId: userId, productId: productId, size: size});
 
         if(!cartData) {
             return next( ErrHandle("No find cartData with params id", 404, res ));
         }
-        await Cart.deleteOne({userId: userId, _id: id})
+        await Cart.deleteOne({userId: userId, productId: productId, size: size})
         res.status(200).json({
             success: true,
             message: "Deleted!"
