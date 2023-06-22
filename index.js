@@ -39,7 +39,7 @@ app.use(cors());
 
 app.use((req, res, next) => {
   // 👇️ specify CORS headers to send 👇️
-  res.setHeader("Access-Control-Allow-Origin", process.env.REACT_URL , 'https://e0f3-14-229-48-118.ngrok-free.app');
+  res.setHeader("Access-Control-Allow-Origin", process.env.REACT_URL);
   res.setHeader(
     'Access-Control-Allow-Methods',
     'POST, PUT, PATCH, GET, DELETE, OPTIONS'
