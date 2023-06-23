@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const CartSchema = mongoose.Schema({
     productName: { type: String, required: [ true, "Please enter your product name"]},
     productImage: { type: String, required: [true, "Please enter your product image"]},
+    productColor: { type: String, required: [true, "Please enter your product image"]},
     quantity: { type: Number, required: [true, "Please enter your product quantity"]},
     userId: {type: mongoose.Schema.Types.ObjectId, ref: "customer", required: [true, "Please enter your user id"]},
     productId: {type: mongoose.Schema.Types.ObjectId, ref: "Product", required: [true, "Please enter your product id"]},

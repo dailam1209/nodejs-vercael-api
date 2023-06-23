@@ -8,6 +8,7 @@ exports.addCart = async (req, res, next) => {
     const {
         productName,
         productImage,
+        productColor,
         quantity,
         userId,
         productId,
@@ -19,6 +20,7 @@ exports.addCart = async (req, res, next) => {
     await Cart.create({
         productName,
         productImage,
+        productColor,
         quantity,
         userId,
         productId,
