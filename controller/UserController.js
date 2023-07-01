@@ -280,15 +280,18 @@ exports.updatePassword = async (req, res, next) => {
 exports.updateProfile = async (req, res, next) => {
     const newuserData = {
         username: req.body.username,
-        email: req.body.email
-    }
-    if(req.body.article_image !== '') {
-        const user = await User.finndById(req.user.id);
+        phone: req.body.phone,
+        email: req.body.email,
+        birthDay: req.body.birthDay
 
-        user.article_image = user.body.article_image;
     }
+    // if(req.body.article_image !== '') {
+    //     const user = await User.finndById(req.user.id);
 
-    const user = await User.findByIdAndUpdate(req.user.id, newuserData, {
+    //     user.article_image = user.body.article_image;
+    // }
+
+    await User.findByIdAndUpdate(req.user.id, newuserData, {
         new: true,
         runValidators: true,
         userFindAndModify: false,
@@ -296,7 +299,6 @@ exports.updateProfile = async (req, res, next) => {
 
     res.status(200).json({
         success: true,
-        user
     })
 };
 

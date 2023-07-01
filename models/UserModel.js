@@ -23,6 +23,9 @@ const UserSchema = new mongoose.Schema({
         validate: [validator.isEmail, "Please enter a valid email"],
         unique: true
     },
+    birthDay: {
+        type: Date,
+    },
     password: {
         type: String,
         required: true,
