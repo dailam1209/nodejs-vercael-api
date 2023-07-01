@@ -41,7 +41,7 @@ router.route("/resetpassword").post(resetpassword);
 router.route("/user/:id").get(isAuthenticatedUser, getUser);
 router.route("/alluser").get(isAuthenticatedUser, authorizeRoles("admin"), getAllUser);
 router.route("/updatepassword").put(isAuthenticatedUser, authorizeRoles("admin"), updatePassword);
-router.route("/updateprofile").post(updateProfile);
+router.route("/updateprofile").post(isAuthenticatedUser,updateProfile);
 router.route("/deleteuser/:id").put(isAuthenticatedUser, authorizeRoles("admin"), deleteUser);
 router.route("/changeuser/:id").put(isAuthenticatedUser, authorizeRoles("admin"), changeUser);
 
