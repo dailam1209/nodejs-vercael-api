@@ -25,6 +25,11 @@ const UserSchema = new mongoose.Schema({
     },
     birthDay: {
         type: Date,
+        required: false,
+    },
+    phone: {
+        type: Number,
+        required: false,
     },
     password: {
         type: String,
