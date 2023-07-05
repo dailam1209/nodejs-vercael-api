@@ -27,6 +27,18 @@ const UserSchema = new mongoose.Schema({
         type: String,
         required: false,
     },
+    province: {
+        type: String,
+        required: false,
+    },
+    distric: {
+        type: String,
+        required: false,
+    },
+    wards: {
+        type: String,
+        required: false,
+    },
     phone: {
         type: Number,
         required: false,
@@ -84,7 +96,7 @@ UserSchema.methods.getResetToken = function () {
 
 /// jwt token
 UserSchema.methods.getJwtToken =  function (id) {
-    return jwt.sign({ id }, process.env.JWT_SECRET_KEY, { expiresIn: "1d" });
+    return jwt.sign({ id }, process.env.JWT_SECRET_KEY, { expiresIn: "14m" });
 }
 
 module.exports = mongoose.model("User", UserSchema);
