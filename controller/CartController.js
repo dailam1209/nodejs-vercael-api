@@ -12,6 +12,7 @@ exports.addCart = async (req, res, next) => {
         quantity,
         userId,
         productId,
+        orderId,
         statusCode,
         inforproduct,
         size
@@ -24,6 +25,7 @@ exports.addCart = async (req, res, next) => {
         quantity,
         userId,
         productId,
+        orderId,
         statusCode,
         inforproduct,
         size

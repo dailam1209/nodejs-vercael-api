@@ -1,9 +1,9 @@
 const mongoose = require('mongoose');
 
 const CartSchema = mongoose.Schema({
-    productName: { type: String, required: [ true, "Please enter your product name"]},
+    productName: { type: String, required: [ true, "Please enter your productName"]},
     productImage: { type: String, required: [true, "Please enter your product image"]},
-    productColor: { type: String, required: [true, "Please enter your product image"]},
+    productColor: { type: String, required: [true, "Please enter your productColor"]},
     quantity: { type: Number, required: [true, "Please enter your product quantity"]},
     userId: {type: mongoose.Schema.Types.ObjectId, ref: "customer", required: [true, "Please enter your user id"]},
     productId: {type: mongoose.Schema.Types.ObjectId, ref: "product", required: [true, "Please enter your product id"]},
