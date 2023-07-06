@@ -39,6 +39,18 @@ const UserSchema = new mongoose.Schema({
         type: String,
         required: false,
     },
+    address: {
+        type: String,
+        required: false,
+    },
+    noteAddress: {
+        type: String,
+        required: false,
+    },
+    payment: {
+        type: String,
+        required: false
+    },
     phone: {
         type: Number,
         required: false,

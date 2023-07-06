@@ -19,6 +19,7 @@ const wishList = require("./router/WishListRouer");
 const category = require("./router/CategoryRouter");
 const brand = require("./router/BrandRouter");
 const Paypal = require("./router/PaypalRouter");
+const order = require("./router/OrderRouter");
 
 dotenv.config();
 paypal.configure({
@@ -84,6 +85,7 @@ app.use("/api/v2/wishlist", wishList);
 app.use("/api/v2/category", category);
 app.use("/api/v2/brand", brand);
 app.use("/paypal", Paypal );
+app.use("/order", order);
 
 app.listen( process.env.PORT , () => {
     console.log(`Listenning to port ${process.env.PORT}`);

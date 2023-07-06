@@ -282,7 +282,13 @@ exports.updateProfile = async (req, res, next) => {
         username: req.body.username,
         phone: req.body.phone,
         email: req.body.email,
-        birthDay: req.body.birthDay
+        birthDay: req.body.birthDay,
+        province: req.body.province,
+        distric: req.body.dsitric,
+        wards: req.body.wards,
+        address: req.body.address,
+        noteAddress: req.body.note,
+        payment: req.body.payment
 
     }
     // if(req.body.article_image !== '') {
