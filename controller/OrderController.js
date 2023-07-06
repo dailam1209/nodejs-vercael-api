@@ -3,30 +3,36 @@ const Cart = require("../models/Cart");
 
 
 exports.createOrder = async (req, res, next) => {
-    const { userId  } = req.params;
-    const { payment, amount } = req.body;
 
-    const newOrder = {
-        userId: userId,
-        status: "pending",
-        payment: payment,
-        amount: amount
-    }
-
-    await Order.create(newOrder);
-
-    const listItermCart = Cart.find({ userId: userId, status: "pending"})
-    await listItermCart.fillter((iterm, index) => {
-        Cart.updateOne({ userId: userId, productId: iterm.productId, size: iterm.size}, {
-            $set: {
-                orderId: newOrder._id
-            }
+    try {
+        const { userId  } = req.params;
+        const { payment, amount } = req.body;
+    
+        const newOrder = {
+            userId: userId,
+            status: "pending",
+            payment: payment,
+            amount: amount
+        }
+    
+        await Order.create(newOrder);
+    
+        const listItermCart = Cart.find({ userId: userId, status: "pending"})
+        await listItermCart.fillter((iterm, index) => {
+            Cart.updateOne({ userId: userId, productId: iterm.productId, size: iterm.size}, {
+                $set: {
+                    orderId: newOrder._id
+                }
+            })
         })
-    })
-    res.status(200).json({
-        success: true,
-        message: "Create newOrder success"
-    })
+        res.status(200).json({
+            success: true,
+            message: "Create newOrder success"
+        })
+    } catch (err) {
+        throw Error(err)
+    }
+    
     
 }
 
