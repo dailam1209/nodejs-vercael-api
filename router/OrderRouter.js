@@ -8,6 +8,6 @@ const { isAuthenticatedUser } = require("../middleware/auth");
 const router = express.Router();
 
 router.route("/create-order").post(isAuthenticatedUser, createOrder);
-router.route("/:id").get(isAuthenticatedUser,getAllOrder);
+router.route("/getallorder").get(isAuthenticatedUser,getAllOrder);
 
 module.exports = router;

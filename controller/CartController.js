@@ -83,7 +83,6 @@ exports.getCartData = async (req, res, next) => {
             let productId = cart.productId;
              allProduct.filter( (product, index) => {
                  if(product._id.toString() === productId.toString()) {
-                    console.log("a",allProduct[index])
                     cartData[ind].inforproduct = allProduct[index] ;
                 }
             })
