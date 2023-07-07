@@ -16,14 +16,16 @@ exports.createOrder = async (req, res, next) => {
         }
     
         await Order.create(newOrder);
+        const id = await Order.findOne({  userId: userId,
+            status: "pending",
+            payment: payment,
+            amount: amount 
+        })
     
-        const listItermCart = await Cart.find({ userId: userId, status: "pending"})
+        const listItermCart = await Cart.find({ userId: userId, statusCode: "1"})
         await listItermCart.filter((iterm, index) => {
-            Cart.updateOne({ userId: userId, productId: iterm.productId, size: iterm.size}, {
-                $set: {
-                    orderId: newOrder._id
-                }
-            })
+            iterm.orderId = id._id;
+            iterm.save();
         })
         res.status(200).json({
             success: true,

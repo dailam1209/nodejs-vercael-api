@@ -108,7 +108,7 @@ UserSchema.methods.getResetToken = function () {
 
 /// jwt token
 UserSchema.methods.getJwtToken =  function (id) {
-    return jwt.sign({ id }, process.env.JWT_SECRET_KEY, { expiresIn: "14m" });
+    return jwt.sign({ id }, process.env.JWT_SECRET_KEY, { expiresIn: "1d" });
 }
 
 module.exports = mongoose.model("User", UserSchema);
