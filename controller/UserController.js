@@ -284,7 +284,7 @@ exports.updateProfile = async (req, res, next) => {
         email: req.body.email,
         birthDay: req.body.birthDay,
         province: req.body.province,
-        distric: req.body.dsitric,
+        distric: req.body.distric,
         wards: req.body.wards,
         address: req.body.address,
         noteAddress: req.body.note,
