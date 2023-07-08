@@ -297,7 +297,7 @@ exports.updateProfile = async (req, res, next) => {
     //     user.article_image = user.body.article_image;
     // }
 
-    await User.findByIdAndUpdate(req.user.id, newuserData, {
+    await User.findByIdAndUpdate(req.user._id, newuserData, {
         new: true,
         runValidators: true,
         userFindAndModify: false,

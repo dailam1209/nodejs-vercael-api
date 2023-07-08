@@ -47,7 +47,7 @@ exports.getAllOrder = async (req, res, next) => {
     const cart = await Cart.find();
 
     //page
-    let resultPerPage = 1; 
+    let resultPerPage = 3; 
     let page = req.query.page || 1; 
     let skip = resultPerPage * (page - 1);
     let lengthSkip = skip + resultPerPage;
