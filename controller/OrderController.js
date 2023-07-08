@@ -40,8 +40,9 @@ exports.createOrder = async (req, res, next) => {
 }
 
 exports.getAllOrder = async (req, res, next) => {
-    const  { userId }  = req.body;
+    const  userId   = req.user._id;
     const listItermOrder = [];
+    let lastItermOrder = [];
     const order = await Order.find({ userId: userId});
     const cart = await Cart.find();
 
@@ -58,21 +59,19 @@ exports.getAllOrder = async (req, res, next) => {
         })
     }
     else {
-        console.log(order);
        await  order.filter((itermOrder, index) => {
-        console.log(itermOrder._id);
-         let listCartFlowIndex =  cart.filter(cartIterm =>cartIterm.orderId.toString() == itermOrder._id.toString() && cartIterm.statusCode === 2);
-         console.log(listCartFlowIndex);
+         let listCartFlowIndex =  cart.filter(cartIterm =>cartIterm.orderId.toString() == itermOrder._id.toString() && cartIterm.statusCode !== 1);
          listItermOrder.push(listCartFlowIndex[0])
         })
-        // if(listItermOrder[0].length > lengthSkip) {
-        //     listItermOrder[0].slice(skip, lengthSkip)
-        // } else {
-        //     listItermOrder[0].slice(skip, listItermOrder[0].length)
-        // }
+        if(listItermOrder.length > lengthSkip) {
+            lastItermOrder = listItermOrder.slice(skip, lengthSkip)
+        } else {
+            lastItermOrder = listItermOrder.slice(skip, listItermOrder.length)
+        }
         res.status(200).json({
             success: true,
-            listItermOrder
+            lengthPage: listItermOrder.length,
+            lastItermOrder
         })
     }
 }
