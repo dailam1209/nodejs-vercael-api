@@ -143,11 +143,12 @@ exports.forgotpassword = async (req, res, next) => {
         email: user.email,
         subject: `Password`,
         code: user.code,
-        token: resetToken,
+        refreshToken: resetToken,
         message
     });
     res.status(200).json({
         success: true,
+        refreshToken: resetToken,
         message: `Email sent to ${user.email} succesfully`
     });
 
@@ -313,6 +314,7 @@ exports.getUser = async (req, res) => {
     } 
   
 };
+
 
 
 
