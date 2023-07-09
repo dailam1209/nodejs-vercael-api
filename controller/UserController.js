@@ -208,17 +208,16 @@ exports.deleteCode = async(req, res, next) => {
                 ErrHandle("Not found email matched",400, res)
                 )
         }
-        if(user.code === code) {
-            user.code = "";
-            await user.save({
-                validateBeforeSave: false
-               });
+       
+        user.code = "";
+        await user.save({
+            validateBeforeSave: false
+            });
 
-            res.status(200).json({
-                success: true,
-                message: "Delete Code"
-            })
-        }
+        res.status(200).json({
+            success: true,
+            message: "Delete Code"
+        })
 
 
     }
