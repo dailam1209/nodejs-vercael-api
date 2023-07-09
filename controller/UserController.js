@@ -169,19 +169,20 @@ exports.forgotpassword = async (req, res, next) => {
 exports.checkCode = async(req, res, next) => {
     try {
         // const { code } = req.params;
-        const { email, code } = req.body;
+        const { email  } = req.body;
         const user = await User.findOne({ email });
         if(!user) {
             return next(
                 ErrHandle("Not found email matched",400, res)
                 )
         }
-        if(user.code === code) {
+        else {
+
             user.code = "";
             await user.save({
                 validateBeforeSave: false
-               });
-
+                });
+    
             res.status(200).json({
                 success: true,
                 message: "Have match code"
