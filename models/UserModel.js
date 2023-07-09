@@ -83,6 +83,11 @@ const UserSchema = new mongoose.Schema({
         type: Date,
         required: false,
         default: ""
+    },
+    code: {
+        type: String,
+        required: false,
+        default: ""
     }
 
     }

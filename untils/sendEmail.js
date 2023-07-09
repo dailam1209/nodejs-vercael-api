@@ -23,7 +23,7 @@ const sendEmail =  async (options) => {
             name: "FE-Shop",
             company: "Four Seasons FashionClother"
         },
-        html: '<p>Hi  '+options.email+' Code NewPassword is: '+options.password+'  , Please copy the link and <a href="'+process.env.LOCALHOST+process.env.LINKFORGOTRESETPASSWORD+'?token='+options.token+' "> reset your password</a>'
+        html: '<p>Hi  '+options.email+' Code NewPassword is: '+options.code+'  , Please copy the link and <a href="'+process.env.LOCALHOST+process.env.LINKFORGOTRESETPASSWORD+'?token='+options.token+' "> reset your password</a>'
     }
 
     transporter.sendMail(optionMail, function( err, infor) {

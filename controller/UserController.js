@@ -126,7 +126,7 @@ exports.forgotpassword = async (req, res, next) => {
                                     .digest("hex");
 
     user.resetPasswordTime = Date.now() + 15 * 60 * 1000;
-    user.password = gennerCode(6);
+    user.code = gennerCode(6);
 
    await user.save({
     validateBeforeSave: false
@@ -142,7 +142,7 @@ exports.forgotpassword = async (req, res, next) => {
     await sendEmail( {
         email: user.email,
         subject: `Password`,
-        password: user.password,
+        code: user.code,
         token: resetToken,
         message
     });
@@ -165,51 +165,123 @@ exports.forgotpassword = async (req, res, next) => {
    }
 };
 
-// Reset Password -> ok
-exports.resetpassword = async (req, res) => {
+exports.checkCode = async(req, res, next) => {
+    try {
+        // const { code } = req.params;
+        const { email, code } = req.body;
+        const user = await User.findOne({ email });
+        if(!user) {
+            return next(
+                ErrHandle("Not found email matched",400, res)
+                )
+        }
+        if(user.code === code) {
+            user.code = "";
+            await user.save({
+                validateBeforeSave: false
+               });
 
-    const { token } = req.query;
-    console.log('token', token);
-    const resetPasswordToken = crypto
-        .createHash("sha256")
-        .update(token)
-        .digest("hex");
+            res.status(200).json({
+                success: true,
+                message: "Have match code"
+            })
+        }
 
 
-    console.log(resetPasswordToken);
-    const user = User.findOne({
-        resetPasswordToken: resetPasswordToken,
-        resetPasswordTime: { $gt: Date.now()}
-    });
-    if( req.body.password !== req.body.confirPassword) {
-        res.status(400).json({
+    }
+    catch (err) {
+        res.status(500).json({
             success: false,
-            message: 'Password is not matched with the new password'
+            message: err.message
         })
     }
 
-    if(!user) {
-        res.status(400).json({
-            success: false,
-            message: 'Reset password false'
-        })
-    } 
-    else {
+}
 
-        // user.password = bcrypt.hashSync(req.body.password, 10);
-        // user.resetPasswordToken = undefined;
-        // user.resetPasswordTime = undefined;
-    
-        // await user.save({ validateBeforeSave: false });
-        await User.updateOne({ resetPasswordToken: resetPasswordToken },
-            { $set: { password: bcrypt.hashSync(req.body.password, 10), resetPasswordToken: ""}}
-        );
-        
-    
-        res.status(200).json({
-            success: true
+exports.deleteCode = async(req, res, next) => {
+    try {
+        const { email  } = req.body;
+        const user = await User.findOne({ email });
+        if(!user) {
+            return next(
+                ErrHandle("Not found email matched",400, res)
+                )
+        }
+        if(user.code === code) {
+            user.code = "";
+            await user.save({
+                validateBeforeSave: false
+               });
+
+            res.status(200).json({
+                success: true,
+                message: "Delete Code"
+            })
+        }
+
+
+    }
+    catch (err) {
+        res.status(500).json({
+            success: false,
+            message: err.message
         })
-        // sendToken(user, 200, res);
+    }
+
+}
+
+// Reset Password -> ok
+exports.resetpassword = async (req, res) => {
+
+    try {
+        const { token } = req.query;
+        console.log('token', token);
+        const resetPasswordToken = crypto
+            .createHash("sha256")
+            .update(token)
+            .digest("hex");
+    
+    
+        console.log(resetPasswordToken);
+        const user = User.findOne({
+            resetPasswordToken: resetPasswordToken,
+            resetPasswordTime: { $gt: Date.now()}
+        });
+        if( req.body.password !== req.body.confirPassword) {
+            res.status(400).json({
+                success: false,
+                message: 'Password is not matched with the new password'
+            })
+        }
+    
+        if(!user) {
+            res.status(400).json({
+                success: false,
+                message: 'Reset password false'
+            })
+        } 
+        else {
+    
+            // user.password = bcrypt.hashSync(req.body.password, 10);
+            // user.resetPasswordToken = undefined;
+            // user.resetPasswordTime = undefined;
+        
+            // await user.save({ validateBeforeSave: false });
+            await User.updateOne({ resetPasswordToken: resetPasswordToken },
+                { $set: { password: bcrypt.hashSync(req.body.password, 10), resetPasswordToken: ""}}
+            );
+            
+        
+            res.status(200).json({
+                success: true
+            })
+            // sendToken(user, 200, res);
+        }
+    } catch(err) {
+        res.status(500).json({
+            success: false,
+            message: err.message
+        })
     }
 
 
@@ -249,63 +321,79 @@ exports.getUser = async (req, res) => {
 // Update user Password ->ok
 
 exports.updatePassword = async (req, res, next) => {
-    const user = await User.findOne({ _id: req.body.user_id });
-    const isPasswordMatched = await bcrypt.compare(req.body.oldPassword, user.password);
+    try {
 
-    if(!isPasswordMatched) {
-        return next(
-            ErrHandle("Old Password is incorrect", 400, res)
-        )
-    } 
-    if(req.body.oldPassword === req.body.newPassword) {
-        return next(
-            ErrHandle("Password have been exist", 400, res)
-        )
-    }
-
-    await User.updateOne(
-            { email: user.email},
-            { $set: { password: bcrypt.hashSync(req.body.newPassword, 10)}}
-    );
-
-    res.status(200).json(
-        {
-            success: true
+        const user = await User.findOne({ _id: req.body.user_id });
+        const isPasswordMatched = await bcrypt.compare(req.body.oldPassword, user.password);
+    
+        if(!isPasswordMatched) {
+            return next(
+                ErrHandle("Old Password is incorrect", 400, res)
+            )
+        } 
+        if(req.body.oldPassword === req.body.newPassword) {
+            return next(
+                ErrHandle("Password have been exist", 400, res)
+            )
         }
-    )
+    
+        await User.updateOne(
+                { email: user.email},
+                { $set: { password: bcrypt.hashSync(req.body.newPassword, 10)}}
+        );
+    
+        res.status(200).json(
+            {
+                success: true
+            }
+        )
+    } catch (err) {
+        res.status(500).json({
+            success: false,
+            message: err.message
+        })
+    }
 
 };
 
 // update profile -> ok
 exports.updateProfile = async (req, res, next) => {
-    const newuserData = {
-        username: req.body.username,
-        phone: req.body.phone,
-        email: req.body.email,
-        birthDay: req.body.birthDay,
-        province: req.body.province,
-        distric: req.body.distric,
-        wards: req.body.wards,
-        address: req.body.address,
-        noteAddress: req.body.note,
-        payment: req.body.payment
+    try {
 
+        const newuserData = {
+            username: req.body.username,
+            phone: req.body.phone,
+            email: req.body.email,
+            birthDay: req.body.birthDay,
+            province: req.body.province,
+            distric: req.body.distric,
+            wards: req.body.wards,
+            address: req.body.address,
+            noteAddress: req.body.note,
+            payment: req.body.payment
+    
+        }
+        // if(req.body.article_image !== '') {
+        //     const user = await User.finndById(req.user.id);
+    
+        //     user.article_image = user.body.article_image;
+        // }
+    
+        await User.findByIdAndUpdate(req.user._id, newuserData, {
+            new: true,
+            runValidators: true,
+            userFindAndModify: false,
+        });
+    
+        res.status(200).json({
+            success: true,
+        })
+    } catch (err) {
+        res.status(500).json({
+            success: false,
+            message: err.message
+        })
     }
-    // if(req.body.article_image !== '') {
-    //     const user = await User.finndById(req.user.id);
-
-    //     user.article_image = user.body.article_image;
-    // }
-
-    await User.findByIdAndUpdate(req.user._id, newuserData, {
-        new: true,
-        runValidators: true,
-        userFindAndModify: false,
-    });
-
-    res.status(200).json({
-        success: true,
-    })
 };
 
 // get all user -- admin -> ok
@@ -322,18 +410,26 @@ exports.getAllUser = async (req, res) => {
 
 //get single user --admin -> ok
 exports.getSingleUser = async (req, res, next) => {
-    const user= User.findById(req.param.id);
+    try {
 
-    if(!user) {
-        return next(
-            ErrHandle("User is not found with this id", 400, res)
-        )
+        const user= User.findById(req.param.id);
+    
+        if(!user) {
+            return next(
+                ErrHandle("User is not found with this id", 400, res)
+            )
+        }
+    
+        res.status(200).json({
+            success: true,
+            user
+        })
+    } catch (err) {
+        res.status(500).json({
+            success: false,
+            message: err.message
+        })
     }
-
-    res.status(200).json({
-        success: true,
-        user
-    })
 };
 
 // delete user --admin -> ok

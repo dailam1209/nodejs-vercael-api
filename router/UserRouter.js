@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const passport = require("passport");
-const { register, logout, changeUser } = require("../controller/UserController");
+const { register, logout, changeUser, checkCode, deleteCode } = require("../controller/UserController");
 const { login } = require("../controller/UserController");
 const { forgotpassword } = require("../controller/UserController");
 const { resetpassword } = require("../controller/UserController");
@@ -38,6 +38,8 @@ router.route("/login/success").get((req, res) => {
   
 router.route("/forgotpassword").post(forgotpassword);
 router.route("/resetpassword").post(resetpassword);
+router.route("/check-code").post(checkCode);
+router.route("/delete-code").post(deleteCode);
 router.route("/user/:id").get(isAuthenticatedUser, getUser);
 router.route("/alluser").get(isAuthenticatedUser, authorizeRoles("admin"), getAllUser);
 router.route("/updatepassword").put(isAuthenticatedUser, authorizeRoles("admin"), updatePassword);
