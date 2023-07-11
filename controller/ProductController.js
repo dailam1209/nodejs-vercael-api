@@ -167,15 +167,11 @@ exports.getAllProduct = async (req, res, next) => {
         filterSize = filterColor ;
      }
 
-    //  console.log("filterSize", filterSize);
-     
-     
      //price
     if(queryprice) {
         const sliptPrice = queryprice.split('-');
         let number1 = Number(sliptPrice[0]);
         let number2 = Number(sliptPrice[1]);
-        console.log("number", number1, number2);
         await filterSize.filter((product, index) => {
             if(product.price >= number1 && product.price <= number2)
                 filterPrice.push(filterSize[index]);
