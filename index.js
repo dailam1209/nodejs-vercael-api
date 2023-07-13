@@ -40,7 +40,7 @@ app.use(cors());
 
 app.use((req, res, next) => {
   // 👇️ specify CORS headers to send 👇️
-  res.setHeader("Access-Control-Allow-Origin", process.env.REACT_URL || "https://fe-canifa.onrender.com");
+  res.setHeader("Access-Control-Allow-Origin", process.env.REACT_URL || "http://localhost:3000");
   res.setHeader(
     'Access-Control-Allow-Methods',
     'POST, PUT, PATCH, GET, DELETE, OPTIONS'
