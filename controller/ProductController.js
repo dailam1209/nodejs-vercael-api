@@ -93,7 +93,7 @@ exports.getAllProduct = async (req, res, next) => {
     const querysize = req.query.size; // size
     const queryprice = req.query.price; // price
     const url = req.url?.replace("/", '')?.split('?')[0];
-    console.log("url", querycolor);
+    console.log("url", url);
     
     // console.log("querycolor", req.url?.replace("/", '')?.split('?')[0]);
     // first handle
@@ -117,13 +117,14 @@ exports.getAllProduct = async (req, res, next) => {
         filterName.push(sizecurrent);
      }
     })
+    console.log("filterName",filterName);
 
 
 
 
     // const filter = await ProductCount.filter(user => user.desc == (`${param}`))
     //color
-    if(querycolor) {
+    if(querycolor && filterName.length > 0) {
       if(typeof querycolor === 'object') {
         await  querycolor.map((titleColor, index) => {
             filterName.filter(product => {
@@ -142,11 +143,11 @@ exports.getAllProduct = async (req, res, next) => {
       }
     }
     else {
-        filterColor = ProductCount;
+        filterColor = filterName;
     }
     // filterColor = ProductCount;
     // size
-    if(querysize) {
+    if(querysize && filterColor.length > 0 ) {
         if( typeof querysize === 'object') {
             let checkHave = [];
             await  querysize.map((titleSize, index) => {
@@ -174,7 +175,7 @@ exports.getAllProduct = async (req, res, next) => {
      }
 
      //price
-    if(queryprice) {
+    if(queryprice && filterSize.length > 0) {
         const sliptPrice = queryprice.split('-');
         let number1 = Number(sliptPrice[0]);
         let number2 = Number(sliptPrice[1]);
