@@ -53,7 +53,7 @@ exports.searchTitle = async (req, res) => {
                 product.filter(_ => {
                     if(_.slug.indexOf(title) !== -1){
     
-                        listTitle.push(_.slug);
+                        listTitle.push(_.description);
                     }
                 })
             }
@@ -89,6 +89,7 @@ exports.getAllProduct = async (req, res, next) => {
     const querysize = req.query.size; // size
     const queryprice = req.query.price; // price
     const url = req.url?.replace("/", '')?.split('?')[0];
+    console.log("url", url);
     
     // console.log("querycolor", req.url?.replace("/", '')?.split('?')[0]);
     // first handle
@@ -181,7 +182,6 @@ exports.getAllProduct = async (req, res, next) => {
         filterPrice =filterSize;
     }
    
-    console.log(filterPrice);
 
 
     // if(filterPrice.length > 0) {
