@@ -44,6 +44,7 @@ exports.searchTitle = async (req, res) => {
         const { title } = req.query;
 
         let listTitle = [];
+        let listSlug = [];
         const url = req?.url?.slice(8,9);
         
         const product = await Product.find();
@@ -53,7 +54,10 @@ exports.searchTitle = async (req, res) => {
                 product.filter(_ => {
                     if(_.slug.indexOf(title) !== -1){
     
-                        listTitle.push(_.description);
+                        listTitle.push({
+                            description: _.description,
+                            slug: _.slug
+                        });
                     }
                 })
             }
