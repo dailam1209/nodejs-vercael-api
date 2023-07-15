@@ -93,11 +93,12 @@ exports.getAllProduct = async (req, res, next) => {
     const querysize = req.query.size; // size
     const queryprice = req.query.price; // price
     const url = req.url?.replace("/", '')?.split('?')[0];
-    console.log("url", url);
+    console.log("url", querycolor);
     
     // console.log("querycolor", req.url?.replace("/", '')?.split('?')[0]);
     // first handle
     let arrKey = [];
+    let filterName = [];
     let reductProduct = [];
     let filterColor = [];
     let filterSize = [];
@@ -113,7 +114,7 @@ exports.getAllProduct = async (req, res, next) => {
 
     await ProductCount.filter( sizecurrent => {
      if( sizecurrent.slug.indexOf(url) !== -1) {
-        filterColor.push(sizecurrent);
+        filterName.push(sizecurrent);
      }
     })
 
@@ -122,27 +123,27 @@ exports.getAllProduct = async (req, res, next) => {
 
     // const filter = await ProductCount.filter(user => user.desc == (`${param}`))
     //color
-    // if(querycolor) {
-    //   if(typeof querycolor === 'object') {
-    //     await  querycolor.map((titleColor, index) => {
-    //         ProductCount.filter(product => {
-    //          if( product.color.title == titleColor) {
-    //              filterColor.push(product);
-    //          }
-    //         })
-    //      })
-    //   }
-    //   else {
-    //         ProductCount.filter(product => {
-    //          if( product.color.title == querycolor) {
-    //              filterColor.push(product);
-    //          }
-    //         })
-    //   }
-    // }
-    // else {
-    //     filterColor = ProductCount;
-    // }
+    if(querycolor) {
+      if(typeof querycolor === 'object') {
+        await  querycolor.map((titleColor, index) => {
+            filterName.filter(product => {
+             if( product.color[0].public_id == titleColor) {
+                 filterColor.push(product);
+             }
+            })
+         })
+      }
+      else {
+            ProductCount.filter(product => {
+             if( product.color[0].public_id == querycolor) {
+                 filterColor.push(product);
+             }
+            })
+      }
+    }
+    else {
+        filterColor = ProductCount;
+    }
     // filterColor = ProductCount;
     // size
     if(querysize) {
