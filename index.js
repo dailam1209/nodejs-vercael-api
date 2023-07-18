@@ -40,7 +40,15 @@ app.use(cors());
 
 app.use((req, res, next) => {
   // 👇️ specify CORS headers to send 👇️
-  res.setHeader("Access-Control-Allow-Origin", process.env.REACT_URL );
+  const corsWhitelist = [
+    'https://fe-canifa.onrender.com',
+    'http://localhost:3000'
+];
+if (corsWhitelist.indexOf(req.headers.origin) !== -1) {
+    res.header('Access-Control-Allow-Origin', req.headers.origin);
+    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+}
+  // res.setHeader("Access-Control-Allow-Origin", process.env.REACT_URL );
   res.setHeader(
     'Access-Control-Allow-Methods',
     'POST, PUT, PATCH, GET, DELETE, OPTIONS'
