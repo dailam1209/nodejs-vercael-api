@@ -17,7 +17,10 @@ exports.isAuthenticatedUser = catchAsyncErrors(async (req,res,next) =>{
         next();
       }
     } catch (err) {
-      throw new Error("Not authorized token expired, Please login again");
+      res.status(401).json({
+        success: false,
+        message: err.message
+    })
 
     }
   } else {

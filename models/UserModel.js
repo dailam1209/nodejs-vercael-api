@@ -74,6 +74,11 @@ const UserSchema = new mongoose.Schema({
         type: Date,
         default: Date.now()
     },
+    refreshToken: {
+        type: String,
+        required: false,
+        default: ""
+    },
     resetPasswordToken: {
         type: String,
         required: false,
@@ -113,7 +118,11 @@ UserSchema.methods.getResetToken = function () {
 
 /// jwt token
 UserSchema.methods.getJwtToken =  function (id) {
-    return jwt.sign({ id }, process.env.JWT_SECRET_KEY, { expiresIn: "1d" });
+    return jwt.sign({ id }, process.env.JWT_SECRET_KEY, { expiresIn: "10s" });
+}
+
+UserSchema.methods.refreshJwtToken =  function (id) {
+    return jwt.sign({ id }, process.env.JWT_SECRET_KEY_REFRESH_TOKEN, { expiresIn: "7d" });
 }
 
 module.exports = mongoose.model("User", UserSchema);

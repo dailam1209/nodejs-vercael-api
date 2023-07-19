@@ -6,6 +6,7 @@ const sendEmail = require("../untils/sendEmail");
 const sendToken = require("../untils/jwtToken");
 const ErrHandle  = require("../untils/ErrHandle");
 const gennerCode = require("../untils/genercode");
+const jwt = require("jsonwebtoken");
 const validateMongoDbId = require("../untils/validateMongooseDbId");
 
 
@@ -72,6 +73,11 @@ exports.login = async (req, res, next) => {
     
             const match = await bcrypt.compare(password, user.password);
             if(match) {
+                const refreshToken = await user.refreshJwtToken(user._id);
+                user.refreshToken = refreshToken;
+                await user.save({
+                    validateBeforeSave: false
+                   });
                 sendToken( user, 200, res);
             }
             else {
@@ -86,6 +92,30 @@ exports.login = async (req, res, next) => {
         return next(
             ErrHandle(err.message,500, res)
             )
+        
+    }
+}
+
+exports.refreshToken = async (req, res, next) => {
+    try {
+        const { refreshToken } = req.body;
+        const decoded = await jwt.verify(refreshToken, process.env.JWT_SECRET_KEY_REFRESH_TOKEN);
+        const user = await User.findById(decoded?.id);
+
+        
+        if(!user) {
+            return next(
+                ErrHandle("refreshToken no match",400, res)
+                )
+        }
+        sendToken(user, 200, res);
+
+    }
+    catch (err) {
+        res.status(500).json({
+            success: false,
+            message: err.message
+        })
         
     }
 }
