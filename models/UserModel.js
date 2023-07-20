@@ -118,7 +118,7 @@ UserSchema.methods.getResetToken = function () {
 
 /// jwt token
 UserSchema.methods.getJwtToken =  function (id) {
-    return jwt.sign({ id }, process.env.JWT_SECRET_KEY, { expiresIn: "10s" });
+    return jwt.sign({ id }, process.env.JWT_SECRET_KEY, { expiresIn: "1d" });
 }
 
 UserSchema.methods.refreshJwtToken =  function (id) {
